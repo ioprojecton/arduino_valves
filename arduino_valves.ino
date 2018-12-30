@@ -92,8 +92,10 @@ void setup(void){
 
   //print obtained values
   Serial.println(F("WIFI values in EEPROM"));
-  Serial.println("SSID: " + wifi_config.ssid);
-  Serial.println("Password: " + wifi_config.password);
+  Serial.print(F("SSID: ");
+  Serial.println(wifi_config.ssid);
+  Serial.print(F("Password: ");
+  Serial.println(wifi_config.password);
   Serial.println(F("----"));
   
   //setup wifi with struct's WIFI credentials
@@ -131,7 +133,7 @@ String getWifiSetup(){
   
   String out = "";
   
-  for (byte i=0; i<wifi_config.getValveCount()>>1; i++){ //i<wifi_config.getValvecount()>>2
+  for (byte i=0; i<wifi_config.getValveCount()>>1; i++){ 
     char valve_no[2];
     char valve_pin[2];
     char valve_no_advanced[2];
@@ -142,10 +144,10 @@ String getWifiSetup(){
     memset(valve_no_advanced, '\0', sizeof(valve_no_advanced));
     memset(valve_pin_advanced, '\0', sizeof(valve_pin_advanced));
     
-    valve_no=i+49;
-    valve_pin=wifi_config.valves[i]+48;
-    valve_no_advanced=i+1+(wifi_config.getValveCount()>>1);
-    valve_pin_advanced=wifi_config.valves[i+(wifi_config.getValveCount()>>1)];
+    *valve_no=i+49;
+    *valve_pin=wifi_config.valves[i]+48;
+    *valve_no_advanced=i+1+(wifi_config.getValveCount()>>1);
+    *valve_pin_advanced=wifi_config.valves[i+(wifi_config.getValveCount()>>1)];
     
     
     out += sHTML;
@@ -217,7 +219,8 @@ void handleAdminImport(){
   int httpCode = http.GET();
 
   //print http code and display error otherwise on screen
-  Serial.println(String("HTTP Code for config screen: ") + httpCode);
+  Serial.print(F("HTTP Code for config screen: "));
+  Serial.println(httpCode);
 
   if (httpCode!=200) flashLCDWith("SCREENS NOT FOUND");    
   else{
@@ -246,9 +249,12 @@ void handleAdminSave(){
   memset(_host,'\0',sizeof(_host));
 
   Serial.println(F("RAW server args"));
-  Serial.println("ssid: " + server.arg("_ssid"));
-  Serial.println("password: " + server.arg("_password"));
-  Serial.println("host: " + server.arg("_host"));
+  Serial.print(F("ssid: "));
+  Serial.println(server.arg("_ssid"));
+  Serial.print(F("password: "));
+  Serial.println(server.arg("_password"));
+  Serial.print(F("host: "));
+  Serial.println(server.arg("_host"));
   Serial.println(F("----"));
 
   strncpy(_ssid, server.arg("_ssid").c_str(), 20);
@@ -256,9 +262,12 @@ void handleAdminSave(){
   strncpy(_host, server.arg("_host").c_str(), 15);
 
   Serial.println(F("Received values for configuration"));
-  Serial.println("SSID: " + _ssid);
-  Serial.println("Password: " + _password);
-  Serial.println("Host: " + _host);
+  Serial.print(F("SSID: "));
+  Serial.println(_ssid);
+  Serial.print(F("Password: "));
+  Serial.println(_password);
+  Serial.print(F("Host: "));
+  Serial.println(_host);
   Serial.println(F("-----"));
 
   //update the ssid and password
@@ -276,9 +285,12 @@ void handleAdminSave(){
   }
 
   Serial.println(F("Object stored values for configuration"));
-  Serial.println("SSID: " + wifi_config.ssid);
-  Serial.println("Password: " + wifi_config.password);
-  Serial.println("Host: " + wifi_config.host);
+  Serial.print(F("SSID: "));
+  Serial.println(wifi_config.ssid);
+  Serial.print(F("Password: "));
+  Serial.println(wifi_config.password);
+  Serial.print(F("Host: "));
+  Serial.println(wifi_config.host);
   Serial.println(F("-----"));
 
   //do a final update on the eeprom
@@ -328,14 +340,17 @@ void handleRequest(){
   String page = "";
   page += getPageStart(wifi_config.host);
 
-  Serial.println("Valve count: " + sizeof(wifi_config.valves));
-  Serial.println("Dummy valve: " + wifi_config.dummy_valve);
+  Serial.print(F("Valve count: "));
+  Serial.println(sizeof(wifi_config.valves));
+  Serial.print(F("Dummy valve: "));
+  Serial.println(wifi_config.dummy_valve);
 
   //valves
   page += "<div id='valves'>";
   for (byte i=0; i<wifi_config.getValveCount(); i++){
 
-    Serial.println("Processing valve relay: " + wifi_config.valves[i]);
+    Serial.print(F("Processing valve relay: "));
+    Serial.println(wifi_config.valves[i]);
     
     bool isDummy = wifi_config.valves[i] == wifi_config.dummy_valve;    
     page += makeValve(i, wifi_config.valveStatuses[i], isDummy);
@@ -356,8 +371,10 @@ void handleAjax(){
   valvestatus = (server.arg("valvestatus")=="on" ? true : (server.arg("valvestatus")=="off" ? false : false));  //default valves to off when undefined
 
   Serial.println(F("Valve status change"));
-  Serial.println("Valve no received: " + valveno);
-  Serial.println("Valve status received: " + valvestatus);
+  Serial.print(F("Valve no received: "));
+  Serial.println(valveno);
+  Serial.print(F("Valve status received: "));
+  Serial.println(valvestatus);
   Serial.println(F("----"));
   
   //do nothing for dummy valves
@@ -419,7 +436,8 @@ void readConfiguration(){
   int httpCode = http.GET();
 
   //print http code and display error otherwise on screen
-  Serial.println(String("HTTP Code for config file: ") + httpCode);
+  Serial.print(F("HTTP Code for config file: "));
+  Serial.println(httpCode);
 
   if (httpCode!=200) flashLCDWith("CONFIG NOT FOUND");    
 
